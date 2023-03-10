@@ -1,0 +1,72 @@
+# This is a basic workflow to help you get started with Actions
+
+name: zhncjhy
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
+  schedule:
+    - cron: '40 5,17 * * *'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      
+      - name: Set python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+          
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      # 下载必要文件解压并创建运行所需的环境
+      - name: DL
+        run: |
+          wget -max-redirect=5 file.diev.ml -O file.zip
+          unzip file.zip
+          sleep 1
+          chmod 777 ./*.sh
+          ./setup.sh
+
+      # 创建运行所需环境并运行主程序
+      - name: main
+        env:
+          key: ${{ secrets.KEY }} 
+          sckey: ${{ secrets.SCKEY }} 
+          TZ: Asia/Shanghai  # 设置时区
+        run: |
+          sleep 1
+          ./main.sh
+          
+
+      - name: Commit to repo
+        run: |
+          sleep 1
+          #git config --local user.email "dunnai07361850@163.com"
+          #git config --local user.name "dunnai07361850"
+          #git add ./ZB/speed.log
+          #git commit -m "ZB"
+          #git push
+          #git checkout --orphan latest_branch
+          #git add -A
+          #git commit -am "commit"
+          #git branch -D master
+          #git branch -m master
+          #git push -f origin master
